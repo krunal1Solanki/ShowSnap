@@ -52,6 +52,14 @@
 - Java
 
 
+# Schema Design
+
+![image](https://user-images.githubusercontent.com/98727328/223332208-f226112f-69b1-45cc-b4ac-aa48502a11d3.png)
+
+
+
+
+
 
 
 # Email Confirmation
