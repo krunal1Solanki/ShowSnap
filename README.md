@@ -37,4 +37,20 @@
 - OOPs
 - Java
 
+# Email Confirmation
+
+![image](https://user-images.githubusercontent.com/98727328/223327078-c4137928-b2f3-4d24-aa99-933c1746b5c8.png)
+
+
+# Admin API's
+- Add User
+![image](https://user-images.githubusercontent.com/98727328/223327105-8e999e60-3d65-4213-929c-46b076fab284.png)
+- Add Show
+![image](https://user-images.githubusercontent.com/98727328/223327113-8baf2186-4db1-44bd-8b62-dc7cee182b55.png)
+- Add Movie
+![image](https://user-images.githubusercontent.com/98727328/223327119-e59ed20f-27d3-4acf-8337-b176b1391e8c.png)
+- Add Theatre
+![image](https://user-images.githubusercontent.com/98727328/223327125-4a68bf4d-99a6-4980-b23f-36f35070280a.png)
+
+
 
