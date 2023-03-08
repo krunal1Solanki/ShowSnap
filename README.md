@@ -62,27 +62,40 @@
 
 
 
-# Email Confirmation
 
-![image](https://user-images.githubusercontent.com/98727328/223327078-c4137928-b2f3-4d24-aa99-933c1746b5c8.png)
+# Booking Confirmation Email
+
+![image](https://user-images.githubusercontent.com/98727328/223663352-577e7994-acbb-4460-894f-55fcd16a1714.png)
+
+
+
+# Cancel Ticket's Confirmation Email
+
+![image](https://user-images.githubusercontent.com/98727328/223663519-28640472-e23f-4a85-a97d-f93aa0215bb3.png)
+
 
 
 # Admin API's
+
 - Add User
 
 
 
  ![image](https://user-images.githubusercontent.com/98727328/223327105-8e999e60-3d65-4213-929c-46b076fab284.png)
+
 - Add Show
 
 
 
+
  ![image](https://user-images.githubusercontent.com/98727328/223327113-8baf2186-4db1-44bd-8b62-dc7cee182b55.png)
+
 - Add Movie
 
 
 
  ![image](https://user-images.githubusercontent.com/98727328/223327119-e59ed20f-27d3-4acf-8337-b176b1391e8c.png)
+
 - Add Theatre
 
 
@@ -90,4 +103,18 @@
  ![image](https://user-images.githubusercontent.com/98727328/223327125-4a68bf4d-99a6-4980-b23f-36f35070280a.png)
 
 
+# User API's
 
+- Book Tickets
+
+
+
+
+![image](https://user-images.githubusercontent.com/98727328/223647561-1b17960c-30d0-469f-a47a-c0275391c5db.png)
+
+- Cancel Tickets
+
+
+
+
+![image](https://user-images.githubusercontent.com/98727328/223647671-f26e013b-e8f1-4e8d-9ef4-67771c1e9192.png)
