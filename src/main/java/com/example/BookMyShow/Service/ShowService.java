@@ -1,9 +1,7 @@
 package com.example.BookMyShow.Service;
 
 import com.example.BookMyShow.Convertors.ShowEntryConverter;
-import com.example.BookMyShow.Entities.MovieEntity;
-import com.example.BookMyShow.Entities.ShowEntity;
-import com.example.BookMyShow.Entities.TheatreEntity;
+import com.example.BookMyShow.Entities.*;
 import com.example.BookMyShow.EntryDtos.ShowEntryDto;
 import com.example.BookMyShow.Repository.MovieRepository;
 import com.example.BookMyShow.Repository.TheatreRepository;
@@ -26,11 +24,11 @@ public class ShowService {
     @Autowired
     MovieRepository movieRepository;
 
-    public ResponseEntity addShow(ShowEntryDto showEntryDto) throws Exception{
+    public ResponseEntity addShow(ShowEntryDto showEntryDto) throws Exception {
         ShowEntity showEntity = ShowEntryConverter.entryConverter(showEntryDto);
 
         boolean toCheckShowOverlap = toCheckShowOverlap(showEntryDto);
-        if(!toCheckShowOverlap) throw new Exception("Cannot enter show, conflict with other show!!");
+        if (!toCheckShowOverlap) throw new Exception("Cannot enter show, conflict with other show!!");
 
         TheatreEntity theatreEntity = theatreRepository.findById(showEntryDto.getTheatreId()).get();
         theatreEntity.getShowEntityList().add(showEntity);
@@ -40,10 +38,13 @@ public class ShowService {
         showEntity.setMovieEntity(movie);
         showEntity.setTheatreEntity(theatreEntity);
 
+        List<TheatreSeatEntity> theatreSeatEntityList = theatreEntity.getTheatreSeatEntityList();
+        List<ShowSeatEntity> showSeatEntityList = createShowSeats(theatreSeatEntityList, showEntity);
+        showEntity.setShowSeatEntityList(showSeatEntityList);
+
         theatreRepository.save(theatreEntity);
         return new ResponseEntity<>("Show added successfully", HttpStatus.CREATED);
     }
-
     private boolean toCheckShowOverlap(ShowEntryDto showEntity) {
         LocalTime start = showEntity.getLocalTime();
         LocalTime end = start.plusHours(3);
@@ -60,5 +61,16 @@ public class ShowService {
         }
 
         return true;
+    }
+
+    private List<ShowSeatEntity> createShowSeats(List<TheatreSeatEntity> theatreSeatEntityList, ShowEntity show) {
+        List<ShowSeatEntity> showSeatEntityList = new ArrayList<>();
+
+        for(TheatreSeatEntity theatreSeatEntity : theatreSeatEntityList) {
+            ShowSeatEntity seat = ShowSeatEntity.builder().seatsNo(theatreSeatEntity.getSeatNo()).seatTypes(theatreSeatEntity.getSeatType()).theatreSeatEntity(theatreSeatEntity).seatPrice(show.getSeatPrice()).showEntity(show).isBooked(false).build();
+            showSeatEntityList.add(seat);
+        }
+
+        return showSeatEntityList;
     }
 }

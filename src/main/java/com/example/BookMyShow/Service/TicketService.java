@@ -1,6 +1,7 @@
 package com.example.BookMyShow.Service;
 
 import com.example.BookMyShow.Entities.*;
+import com.example.BookMyShow.EntryDtos.DeleteTicketEntryDto;
 import com.example.BookMyShow.EntryDtos.TicketEntryDto;
 import com.example.BookMyShow.Repository.ShowRepository;
 import com.example.BookMyShow.Repository.TheatreRepository;
@@ -13,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.*;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class TicketService {
@@ -33,9 +34,9 @@ public class TicketService {
         ticketEntity.setMovieName(showEntity.getMovieEntity().getMovieName());
 
         List<String> seatToBeBook = ticketEntryDto.getSeatToBeBook();
-        boolean isBooked = allocateSeats(seatToBeBook, showEntity);
-
-        if(!isBooked) throw new Exception("Some of the seats are already booked");
+        int multiChecks = allocateSeats(seatToBeBook, showEntity);
+        if(multiChecks == 0) throw new Exception("You have entered non existing seat number !");
+        if(multiChecks == -1) throw new Exception("Some of the seats are already booked");
 
         String bookedSeats = "";
         for(String s : seatToBeBook) {
@@ -55,6 +56,7 @@ public class TicketService {
         UserEntity user = userRepository.findById(ticketEntryDto.getShowId()).get();
         user.getBookedTicketList().add(ticketEntity);
         ticketEntity.setUserEntity(user);
+        ticketEntity.setShowEntity(showEntity);
 
         ticketRepository.save(ticketEntity);
         showRepository.save(showEntity);
@@ -62,7 +64,7 @@ public class TicketService {
 
 
 
-        String body = "Hi this is to confirm your booking for seat No "+ bookedSeats +"for the movie : " + ticketEntity.getMovieName();
+        String body = "Hi this is to confirm your booking for seat No "+ bookedSeats +" for the movie : " + ticketEntity.getMovieName() + " Have a wonderful Show : - ) ";
 
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -76,16 +78,19 @@ public class TicketService {
 
         return new ResponseEntity<>("Tickets booked successfully", HttpStatus.CREATED);
     }
-    public boolean allocateSeats(List<String> seat, ShowEntity showEntity) {
+    public int allocateSeats(List<String> seat, ShowEntity showEntity) {
         List<ShowSeatEntity> showEntityList = showEntity.getShowSeatEntityList();
-        for(ShowSeatEntity currSeat : showEntityList) {
-            if(seat.contains(currSeat.getSeatsNo()) && currSeat.isBooked()) {
-                return false;
+        int count = 0;
+        for(ShowSeatEntity showSeatEntity : showEntityList) {
+            if(seat.contains(showSeatEntity.getSeatsNo())) {
+                if(showSeatEntity.isBooked()) return -1;
+                count ++;
             }
         }
+        if(count != seat.size()) return 0;
 
         markSeatBooked(seat, showEntity);
-        return true;
+        return 1;
     }
 
     private void markSeatBooked(List<String> seat, ShowEntity showEntity) {
@@ -94,5 +99,47 @@ public class TicketService {
                 currSeat.setBooked(true);
             }
         }
+    }
+
+    public ResponseEntity cancelTicket(DeleteTicketEntryDto deleteTicketEntryDto) throws Exception{
+        TicketEntity ticketEntity = ticketRepository.findById(deleteTicketEntryDto.getTicketId()).get();
+        List<ShowSeatEntity> showSeatEntityList = ticketEntity.getShowEntity().getShowSeatEntityList();
+        List<String> ticketsToBeDeleted = deleteTicketEntryDto.getDeleteTicketList();
+
+        String [] currTickets = ticketEntity.getBookedSeats().split(",");
+
+        int count = 0;
+        for(String ticketName : currTickets) if(ticketsToBeDeleted.contains(ticketName)) count ++;
+        if(count != ticketsToBeDeleted.size()) throw new Exception("Please check the names of tickets to be deleted. Invalid data found !");
+
+        HashSet<String> deletedTicketSet = new HashSet<>();
+        for(ShowSeatEntity seat : showSeatEntityList) {
+            if(ticketsToBeDeleted.contains(seat.getSeatsNo())) {
+                seat.setBooked(false);
+                deletedTicketSet.add(seat.getSeatsNo());
+            }
+        }
+
+        String newBookedTickets = "";
+        for(String tick : currTickets) {
+            if(!deletedTicketSet.contains(tick)) {
+                if(!newBookedTickets.isEmpty()) newBookedTickets += ',';
+                newBookedTickets += tick;
+            }
+        }
+
+        ticketEntity.setPrice(ticketEntity.getPrice() - deletedTicketSet.size() * 200);
+
+        if(newBookedTickets.isEmpty())  {
+            UserEntity user = ticketEntity.getUserEntity();
+            ticketRepository.delete(ticketEntity);
+            userRepository.save(user);
+            return new ResponseEntity<>("Tickets has been successfully cancelled !", HttpStatus.OK);
+        }
+
+        ticketEntity.setBookedSeats(newBookedTickets);
+        userRepository.save(ticketEntity.getUserEntity());
+
+        return new ResponseEntity<>("Tickets has been successfully cancelled !", HttpStatus.OK);
     }
 }
