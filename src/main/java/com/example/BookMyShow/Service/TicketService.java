@@ -18,6 +18,7 @@ import java.util.*;
 
 @Service
 public class TicketService {
+
     @Autowired
     ShowRepository showRepository;
     @Autowired
@@ -64,14 +65,16 @@ public class TicketService {
 
 
 
-        String body = "Hi this is to confirm your booking for seat No "+ bookedSeats +" for the movie : " + ticketEntity.getMovieName() + " Have a wonderful Show : - ) ";
+        String body = "Hi "+user.getUserName()+"\n\nThis is to confirm your ticket bookings please refer below details so you don't miss the show !!"+"\n\nMovie Name -"+showEntity.getMovieEntity().getMovieName();
 
+        String info = "\nTheatre Name -"+showEntity.getTheatreEntity().getTheatreName()+"\nBooked Seats - "+bookedSeats+"\nTicket Id - "+ticketEntity.getTicketId()+"\nShow Date - "+showEntity.getLocalDate()+"\nShow Time - "+showEntity.getLocalTime();
+        String greet = "\n\n Have a wonderful show !!  : - ) ";
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper=new MimeMessageHelper(mimeMessage,true);
-        mimeMessageHelper.setFrom("backeendacciojob@gmail.com");
+        mimeMessageHelper.setFrom("krunalsolucky121@gmail.com");
         mimeMessageHelper.setTo(user.getEmail());
-        mimeMessageHelper.setText(body);
+        mimeMessageHelper.setText(body + info + greet);
         mimeMessageHelper.setSubject("Confirming your booked Ticket");
 
         javaMailSender.send(mimeMessage);
@@ -128,10 +131,29 @@ public class TicketService {
             }
         }
 
-        ticketEntity.setPrice(ticketEntity.getPrice() - deletedTicketSet.size() * 200);
+        Iterator it = deletedTicketSet.iterator();
+        String newTics = "";
+        while(it.hasNext()) {
+            newTics += it.next();
+        }
+
+        int toBeDeleted = deletedTicketSet.size() * 200;
+        ticketEntity.setPrice(ticketEntity.getPrice() - toBeDeleted);
+
+        UserEntity user = ticketEntity.getUserEntity();
+        String body = "Hi "+user.getUserName()+"\n\nThis is to confirm your booking cancellation."+"\nTicket id - "+ticketEntity.getTicketId()+"\nCancelled Seats - "+newTics+"\nAmount of rupees - "+toBeDeleted+" will be refunded in to your account in 6-7 working days\n\n\n"+"Have a wonderful day !";
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper=new MimeMessageHelper(mimeMessage,true);
+        mimeMessageHelper.setFrom("krunalsolucky121@gmail.com");
+        mimeMessageHelper.setTo(user.getEmail());
+        mimeMessageHelper.setText(body);
+        mimeMessageHelper.setSubject("Confirming your booked Ticket");
+
+        javaMailSender.send(mimeMessage);
+
 
         if(newBookedTickets.isEmpty())  {
-            UserEntity user = ticketEntity.getUserEntity();
             ticketRepository.delete(ticketEntity);
             userRepository.save(user);
             return new ResponseEntity<>("Tickets has been successfully cancelled !", HttpStatus.OK);
