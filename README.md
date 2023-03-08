@@ -62,9 +62,17 @@
 
 
 
-# Email Confirmation
 
-![image](https://user-images.githubusercontent.com/98727328/223327078-c4137928-b2f3-4d24-aa99-933c1746b5c8.png)
+# Booking Confirmation Email
+
+![image](https://user-images.githubusercontent.com/98727328/223663352-577e7994-acbb-4460-894f-55fcd16a1714.png)
+
+
+
+# Cancel Ticket's Confirmation Email
+
+![image](https://user-images.githubusercontent.com/98727328/223663519-28640472-e23f-4a85-a97d-f93aa0215bb3.png)
+
 
 
 # Admin API's
