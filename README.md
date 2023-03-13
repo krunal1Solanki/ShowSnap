@@ -47,8 +47,7 @@
 
 # Teck-Stack Used :
 - Spring-Boot
-- MySQL Database
-- OOPs
+- MySQL
 - Java
 
 
