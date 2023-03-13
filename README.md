@@ -49,7 +49,8 @@
 - Spring-Boot
 - MySQL
 - Java
-
+- Hibernate
+- JPA
 
 # Schema Design
 
